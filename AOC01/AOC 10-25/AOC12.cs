@@ -3,6 +3,8 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Drawing;
+    using System.Drawing.Imaging;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -14,12 +16,13 @@
 
         public static void Run()
         {
-            IEnumerable<string> lines = File.ReadLines("AOC 10-25/InputFiles/TextFile12_2.txt");
+            IEnumerable<string> lines = File.ReadLines("AOC 10-25/InputFiles/TextFile12.txt");
             int xSize = lines.First().Length;
             int ySize = lines.Count();
             Nodes = new Node[xSize, ySize];
             Node startingNode = null;
             Node targetNode = null;
+            Bitmap bitmap = new Bitmap(xSize, ySize);
 
             List<Node> openSet = new List<Node>();
             List<Node> closedSet = new List<Node>();
@@ -29,15 +32,18 @@
                 for (int x = 0; x < xSize; x++)
                 {
                     Nodes[x, y] = new Node(x, y, lines.ElementAt(y).ToCharArray().ElementAt(x));
+                    bitmap.SetPixel(x, y, Color.FromArgb(50, (Nodes[x, y].Z * 25 % 255), 50));
                     if (Nodes[x, y].Z == 83)
                     {
                         startingNode = Nodes[x, y];
                         startingNode.Z = 97;
+                        bitmap.SetPixel(x, y, Color.FromArgb(0, 255, 0));
                     }
                     else if (Nodes[x, y].Z == 69)
                     {
                         targetNode = Nodes[x, y];
                         targetNode.Z = 122;
+                        bitmap.SetPixel(x, y, Color.FromArgb(255, 0, 0));
                     }
                 }
             }
@@ -62,6 +68,53 @@
                 }
             }
 
+            List<Node> possibleStartingNodes = new List<Node>();
+            foreach (Node node in Nodes) 
+            {
+                if (node.Z == 97 && node.X == 0)
+                {
+                    possibleStartingNodes.Add(node);
+                }
+            }
+
+            int minPathLenght = int.MaxValue;
+            int totalChecks = possibleStartingNodes.Count;
+            int currentCheck = 1;
+            foreach (Node node in possibleStartingNodes)
+            {
+                if (!node.IsCave)
+                {
+                    List<Node> path = GetAStarPath(node, targetNode, bitmap);
+                    Console.WriteLine($"{currentCheck}/{possibleStartingNodes.Where(x=> !x.IsCave).Count()}");
+                    currentCheck++;
+
+                    if (path != null)
+                    {
+                        minPathLenght = minPathLenght < path.Count ? minPathLenght : path.Count;
+                    }
+                }
+            }
+
+            Console.WriteLine(minPathLenght);
+        }
+
+        public static bool IsSuitableChild(int parentElevation, int childX, int childY)
+        {
+            try 
+            {
+                return Nodes[childX, childY].Z - 1 <= parentElevation; 
+            } 
+            catch(Exception ignore) 
+            {
+                return false;
+            }
+        }
+
+        public static List<Node> GetAStarPath(Node startingNode, Node targetNode, Bitmap bitmap = null)
+        {
+            List<Node> openSet = new List<Node>();
+            List<Node> closedSet = new List<Node>();
+
             openSet.Add(startingNode);
             foreach (Node child in startingNode.ChildNodes)
             {
@@ -75,15 +128,13 @@
                 openSet.Remove(currentNode);
                 closedSet.Add(currentNode);
 
-                //DrawMap(xSize, ySize, closedSet);
-
                 if (currentNode.Equals(targetNode))
                 {
                     Console.WriteLine("Found target node");
                     break;
                 }
 
-                foreach (Node child in currentNode.ChildNodes.OrderByDescending(x=>x.TotalCost))
+                foreach (Node child in currentNode.ChildNodes.OrderByDescending(x => x.TotalCost))
                 {
                     if (!closedSet.Contains(child))
                     {
@@ -109,59 +160,34 @@
                 path.Add(parent);
                 parent = parent.Parent;
                 counter++;
-                if (parent.Equals(startingNode))
+                if (parent != null && bitmap != null)
                 {
-                    break;
-                }    
-            }
-
-            DrawMap(xSize, ySize, path);
-
-            Console.WriteLine(counter);
-        }
-
-        public static void DrawMap(int xSize, int ySize, List<Node> closedSet)
-        {
-            Console.Clear();
-            for (int y = 0; y < ySize; y++)
-            {
-                for (int x = 0; x < xSize; x++)
-                {
-                    if (closedSet.Contains(Nodes[x,y]))
-                    {
-                        Console.BackgroundColor = ConsoleColor.Green;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-                    Console.Write($"[{(char)Nodes[x, y].Z}]");
+                    bitmap.SetPixel(parent.X, parent.Y, Color.FromArgb(230, 200, 0));
                 }
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.WriteLine();
+                if (parent == null || parent.Equals(startingNode))
+                {
+                    if (closedSet.All(x => x.Z == 97))
+                    {
+                        closedSet.ForEach(x => Nodes[x.X, x.Y].IsCave = true);
+                    }
+
+                    closedSet.ForEach(x => bitmap.SetPixel(x.X, x.Y, Color.Pink));
+
+                    if (parent == null)
+                    {
+                        return null;
+                    }
+
+                    break;
+                }
             }
 
-            Thread.Sleep(1000);
-        }
-
-        public static void SetPossibleChildNodes(Node node)
-        {
-            Node down = Nodes[node.X, node.Y + 1];
-            Node up = Nodes[node.X, node.Y - 1];
-            Node right = Nodes[node.X + 1, node.Y];
-            Node left = Nodes[node.X - 1, node.Y];
-        }
-
-        public static bool IsSuitableChild(int parentElevation, int childX, int childY)
-        {
-            try 
+            if (bitmap != null)
             {
-                return Nodes[childX, childY].Z - 1 <= parentElevation; 
-            } 
-            catch(Exception ignore) 
-            {
-                return false;
+                bitmap.Save("result.bmp", ImageFormat.Bmp);
             }
+             
+            return path;
         }
     }
 
@@ -175,6 +201,7 @@
         public double TotalCost { get; set; } 
         public List<Node> ChildNodes { get; set; }
         public Node Parent { get; set; }
+        public bool IsCave = false;
 
         public Node(int x, int y, int z)
         {
@@ -186,14 +213,16 @@
 
         public void CalculateCost(Node start, Node target)
         {
-            EndCost = Math.Sqrt(Math.Pow(Convert.ToDouble(Math.Abs(X - target.X)), 2d) + Math.Pow(Convert.ToDouble(Math.Abs(Y-target.Y)), 2d));
+            EndCost = Convert.ToDouble(Math.Abs(X - start.X)) + Convert.ToDouble(Math.Abs(Y - start.Y));
+            //EndCost = Math.Sqrt(Math.Pow(Convert.ToDouble(Math.Abs(X - target.X)), 2d) + Math.Pow(Convert.ToDouble(Math.Abs(Y-target.Y)), 2d));
             StartCost = GetStartCost(start);
             TotalCost = EndCost + StartCost;
         }
 
         public double GetStartCost(Node start)
         {
-            return Math.Sqrt(Math.Pow(Convert.ToDouble(Math.Abs(X - start.X)), 2d) + Math.Pow(Convert.ToDouble(Math.Abs(Y - start.Y)), 2d));
+            return Convert.ToDouble(Math.Abs(X - start.X)) + Convert.ToDouble(Math.Abs(Y - start.Y));
+            //return Math.Sqrt(Math.Pow(Convert.ToDouble(Math.Abs(X - start.X)), 2d) + Math.Pow(Convert.ToDouble(Math.Abs(Y - start.Y)), 2d));
         }
     }
 }
