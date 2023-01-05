@@ -45,6 +45,9 @@
     <None Update="AOC 1-9\InputFiles\TextFile9_2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="AOC 10-25\AOC13\TextFile13_2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AOC 10-25\InputFiles\TextFile10.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -63,7 +66,7 @@
     <None Update="AOC 10-25\InputFiles\TextFile12_2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="AOC 10-25\InputFiles\TextFile13.txt">
+    <None Update="AOC 10-25\AOC13\TextFile13.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
