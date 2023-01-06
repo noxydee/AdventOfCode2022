@@ -2,6 +2,7 @@
 using AOC01;
 using AOC01.AOC_10_25;
 using AOC01.AOC_10_25.AOC13;
+using AOC01.AOC_10_25.AOC14;
 
 using System.Net.Sockets;
 
@@ -17,4 +18,5 @@ using System.Net.Sockets;
 //AOC10.Run();
 //AOC11.Run();
 //AOC12.Run();
-AOC13.Run();
+//AOC13.Run();
+AOC14.Run();
