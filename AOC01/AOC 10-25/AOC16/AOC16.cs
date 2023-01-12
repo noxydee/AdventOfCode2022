@@ -14,6 +14,13 @@
         {
             IEnumerable<string> lines = File.ReadLines("AOC 10-25/AOC16/TextFile16_2.txt");
 
+            InputValues(lines.ToList());
+
+            var x = 10;
+        }
+
+        private static void InputValues(List<string> lines)
+        {
             foreach (string line in lines)
             {
                 List<string> values = line.Split(" ").ToList();
@@ -30,9 +37,14 @@
                 Valve valve = Valves.First(x => x.Name.Equals(values[1]))
                     ?? throw new Exception($"Valve {values[1]} not found");
 
-                foreach(string connectedValve in values.Skip(9))
+                foreach (string connectedValve in values.Skip(9))
                 {
                     string connectedValveName = connectedValve.Replace(",", "");
+
+                    Valve childValve = Valves.FirstOrDefault(x => x.Name.Equals(connectedValveName))
+                        ?? throw new Exception($"Valve {connectedValveName} not found");
+
+                    valve.ConnectedValves.Add(childValve);
                 }
             }
         }
