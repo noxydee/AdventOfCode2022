@@ -17,7 +17,7 @@
 
         public static void Run()
         {
-            IEnumerable<string> lines = File.ReadLines("AOC 10-25/InputFiles/TextFile10.txt");
+            IEnumerable<string> lines = File.ReadLines("AOC 10-25/AOC10/TextFile10.txt");
 
             foreach (string line in lines)
             {

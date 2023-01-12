@@ -13,7 +13,7 @@
     {
         public static void Run()
         {
-            IEnumerable<string> lines = File.ReadLines("AOC 10-25/InputFiles/TextFile11.txt");
+            IEnumerable<string> lines = File.ReadLines("AOC 10-25/AOC11/TextFile11.txt");
             List<Monkey> monkeys = new List<Monkey>();
 
             foreach (string line in lines)

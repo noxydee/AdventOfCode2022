@@ -16,7 +16,7 @@
 
         public static void Run()
         {
-            IEnumerable<string> lines = File.ReadLines("AOC 10-25/InputFiles/TextFile12.txt");
+            IEnumerable<string> lines = File.ReadLines("AOC 10-25/AOC12/TextFile12.txt");
             int xSize = lines.First().Length;
             int ySize = lines.Count();
             Nodes = new Node[xSize, ySize];

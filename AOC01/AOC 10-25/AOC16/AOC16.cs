@@ -2,9 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     internal class AOC16
     {
@@ -16,6 +15,8 @@
 
             InputValues(lines.ToList());
 
+            GraphVisualization graphHelper = new GraphVisualization(1000, 1000, Color.Blue, Color.Red, Valves);
+            graphHelper.SaveGraphImage();
             var x = 10;
         }
 
