@@ -15,7 +15,7 @@
 
             InputValues(lines.ToList());
 
-            GraphVisualization graphHelper = new GraphVisualization(1000, 1000, Color.Blue, Color.Red, Valves);
+            GraphVisualization graphHelper = new GraphVisualization(2000, 2000, Color.Peru, Color.PeachPuff, Valves);
             graphHelper.SaveGraphImage();
             var x = 10;
         }

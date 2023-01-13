@@ -14,8 +14,10 @@
 
         private Brush NodeBrush { get; set; }
         private Brush LineBrush { get; set; }
+        private Brush FontBrush { get; set; }
+        private Pen LinePen { get; set; }
 
-        private int NodeRadius = 100;
+        private int NodeRadius = 35;
         private int LineRadius = 3;
 
         public GraphVisualization(int xSize, int ySize, Color nodeColor, Color lineColor, List<Valve> valves) 
@@ -27,21 +29,35 @@
 
             NodeBrush = new SolidBrush(NodeColor);
             LineBrush = new SolidBrush(LineColor);
+            FontBrush = new SolidBrush(Color.White);
+            LinePen = new Pen(LineBrush);
         }
 
         public void SaveGraphImage()
         {
-            List<Point> points = GetPointsOnCircle(Bitmap.Size.Width / 2, Bitmap.Size.Height / 2, Bitmap.Size.Width / 4, Valves.Count);
+            List<Point> points = GetPointsOnCircle(Bitmap.Size.Width / 2, Bitmap.Size.Height / 2, Convert.ToInt32(Bitmap.Size.Width / 2.5d), Valves.Count);
 
             Graphics graphics = Graphics.FromImage(Bitmap);
 
-            foreach (Point point in points)
+            for (int i = 0; i < Valves.Count; i++)
             {
-                graphics.FillEllipse(NodeBrush, point.X, point.Y, NodeRadius, NodeRadius);
+                foreach (Valve connectedValve in Valves.ElementAt(i).ConnectedValves)
+                {
+                    int index = Valves.IndexOf(connectedValve);
+
+                    graphics.DrawLine(LinePen, points[i], points[index]);
+                }
             }
 
-            Bitmap result = new Bitmap(Bitmap.Width, Bitmap.Height, graphics);
-            result.Save("AOC16.bmp", ImageFormat.Bmp);
+            for (int i = 0; i < Valves.Count; i++)
+            {
+                graphics.FillEllipse(NodeBrush, Convert.ToInt32(points[i].X-NodeRadius/2), Convert.ToInt32(points[i].Y-NodeRadius/2), NodeRadius, NodeRadius);
+                graphics.DrawString(Valves[i].Name, SystemFonts.DefaultFont, FontBrush, points[i].X-10, points[i].Y-10);
+                graphics.DrawString($"[{Valves[i].Rate}]", SystemFonts.DefaultFont, FontBrush, points[i].X-10, points[i].Y+5);
+            }
+
+            //Bitmap result = new Bitmap(Bitmap.Width, Bitmap.Height, graphics);
+            Bitmap.Save("AOC16.bmp", ImageFormat.Bmp);
         }
 
         private List<Point> GetPointsOnCircle(int x, int y, int radius, int numerOfPoints)
