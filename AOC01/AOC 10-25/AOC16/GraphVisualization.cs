@@ -1,5 +1,7 @@
 ﻿namespace AOC01.AOC_10_25.AOC16
 {
+    using AOC01.AOC_10_25.AOC16.FormView;
+
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -58,6 +60,33 @@
 
             //Bitmap result = new Bitmap(Bitmap.Width, Bitmap.Height, graphics);
             Bitmap.Save("AOC16.bmp", ImageFormat.Bmp);
+        }
+
+        public void DrawOnForms(PaintEventArgs pe)
+        {
+            List<Point> points = GetPointsOnCircle(Bitmap.Size.Width / 2, Bitmap.Size.Height / 2, Convert.ToInt32(Bitmap.Size.Width / 2.5d), Valves.Count);
+
+            using (Graphics graphics = pe.Graphics)
+            {
+                for (int i = 0; i < Valves.Count; i++)
+                {
+                    foreach (Valve connectedValve in Valves.ElementAt(i).ConnectedValves)
+                    {
+                        int index = Valves.IndexOf(connectedValve);
+
+                        graphics.DrawLine(LinePen, points[i], points[index]);
+                    }
+                }
+
+                for (int i = 0; i < Valves.Count; i++)
+                {
+                    graphics.FillEllipse(NodeBrush, Convert.ToInt32(points[i].X - NodeRadius / 2), Convert.ToInt32(points[i].Y - NodeRadius / 2), NodeRadius, NodeRadius);
+                    graphics.DrawString(Valves[i].Name, SystemFonts.DefaultFont, FontBrush, points[i].X - 10, points[i].Y - 10);
+                    graphics.DrawString($"[{Valves[i].Rate}]", SystemFonts.DefaultFont, FontBrush, points[i].X - 10, points[i].Y + 5);
+                }
+
+                graphics.Save();
+            }
         }
 
         private List<Point> GetPointsOnCircle(int x, int y, int radius, int numerOfPoints)

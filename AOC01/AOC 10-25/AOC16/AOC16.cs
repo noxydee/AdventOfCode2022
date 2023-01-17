@@ -1,5 +1,7 @@
 ﻿namespace AOC01.AOC_10_25.AOC16
 {
+    using AOC01.AOC_10_25.AOC16.FormView;
+
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -9,14 +11,16 @@
     {
         public static List<Valve> Valves = new List<Valve>();
 
+        [STAThread]
         public static void Run()
         {
             IEnumerable<string> lines = File.ReadLines("AOC 10-25/AOC16/TextFile16_2.txt");
 
             InputValues(lines.ToList());
 
-            GraphVisualization graphHelper = new GraphVisualization(2000, 2000, Color.Peru, Color.PeachPuff, Valves);
+            GraphVisualization graphHelper = new GraphVisualization(1000, 1000, Color.Peru, Color.PeachPuff, Valves);
             graphHelper.SaveGraphImage();
+
             var x = 10;
         }
 
