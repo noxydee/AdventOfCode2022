@@ -124,6 +124,7 @@
         Right
     }
 
+    [Serializable]
     public class Point
     {
         public int X;
